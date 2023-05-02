@@ -404,6 +404,10 @@ Azure Database for MySQL Flexible ServerにMySQL Databaseを作成します。
 Spring BootアプリケーションをAzureにデプロイします。
 JARファイルを作成後、`--artifact-path`オプションを指定してデプロイすることも可能ですが、今回は、事前にJARファイルを作成せず、 `--source-path` オプションを指定してソースファイルをアップロードし、Buildpackを使ってビルドすることにします。
 
+なお、今回のPetClinicアプリケーションのソースコードでは、複数モジュールを一度にビルドする形式になっています。そのため、`--target-module` を指定して、デプロイ対象のモジュールを指定しています。
+
+> 通常はモジュールごとに`pom.xml`もしくは`build.gradle`があるため、`--target-module`を指定する必要はありません
+
 ```bash
 az spring app deploy \
         --resource-group ${RESOURCE_GROUP} \
