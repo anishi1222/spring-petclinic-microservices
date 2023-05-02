@@ -89,7 +89,7 @@ Azure Cloud Shellで本記事のコードを実行するには
 
 ```bash
     mkdir source-code
-    git clone https://github.com/azure-samples/spring-petclinic-microservices
+    git clone https://github.com/anishi1222/spring-petclinic-microservices
 ```
 
 クローンした先のディレクトリに移動し、プロジェクトをビルドしておきます。
@@ -134,17 +134,16 @@ Azure Cloud Shellで本記事のコードを実行するには
 
 ### Azureへのログイン
 
-Login to the Azure CLIにログインし、アクティブなサブスクリプションを選択します。アクティブなサブスクリプションではAzure Spring Appsが利用できるようになっていることを確認しておいてください。
+Azure CLIにログインし、アクティブなサブスクリプションを選択します。アクティブなサブスクリプションではAzure Spring Appsが利用できるようになっていることを確認しておいてください。
 
 ```bash
     az login
-    az account list -o table
     az account set --subscription ${SUBSCRIPTION}
 ```
 
 ### Azure Spring Appのインスタンスを作成
 
-Prepare a name for your Azure Spring Appインスタンスの名前を準備します。命名規則は以下の通りです。
+Azure Spring Appインスタンスの名前を準備します。命名規則は以下の通りです。
 
 - 4文字以上、32文字以内
 - アルファベットの小文字、数字、ハイフンのみを含む
@@ -158,7 +157,7 @@ Prepare a name for your Azure Spring Appインスタンスの名前を準備し�
         --location ${REGION}
 ```
 
-Azure Spring Appのインスタンスを作成します。
+Azure Spring Appsのインスタンスを作成します。
 
 ```bash
     az spring create --name ${SPRING_APPS} \
@@ -249,7 +248,24 @@ Azure Spring Appのインスタンスを作成します。
 
 ### Spring Apps Config Serverへのロード
 
-このプロジェクトのルートにある `application.yml` を使って、Azure Spring AppsのConfig Serverに構成情報をロードします。
+このプロジェクトのルートにある `application.yml` には以下の情報が含まれています。
+
+```yaml
+spring:
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/azure-samples/spring-petclinic-microservices-config
+        native:
+          search-locations: classpath:.
+  profiles:
+    active: native
+```
+
+必要であれば、上記ファイルのURLをクローンの上、`application.yml`を編集することもできます。
+
+`application.yml` を使って、Azure Spring AppsのConfig Serverに構成情報をロードします。
 
 ```bash
     az spring config-server set \
@@ -259,33 +275,33 @@ Azure Spring Appのインスタンスを作成します。
 
 ### Azure Spring Appsでのアプリケーションの作成
 
-5個のアプリケーションを作成します。
+5個のアプリケーションを作成します。JVMオプションはアーティファクトのデプロイ時、もしくはアプリケーション作成時に指定できます。今回はアプリケーション作成時に指定します。
 
 ```bash
     az spring app create --name ${API_GATEWAY} --instance-count 1 --assign-endpoint true \
         --memory 3Gi \
         --runtime-version Java_17 \
-        --jvm-options='-XX:InitialRAMPercentage=50.0 -XX:MinRAMPercentage=66.6 -XX:MaxRAMPercentage=66.6'
+        --jvm-options="-XX:+UseG1GC -XX:+UseStringDeduplication -XX:InitialRAMPercentage=50.0 -XX:MinRAMPercentage=66.6 -XX:MaxRAMPercentage=66.6 -XX:ActiveProcessorCount=1"
     
     az spring app create --name ${ADMIN_SERVER} --instance-count 1 --assign-endpoint true \
         --memory 3Gi \
         --runtime-version Java_17 \
-        --jvm-options='-XX:InitialRAMPercentage=50.0 -XX:MinRAMPercentage=66.6 -XX:MaxRAMPercentage=66.6'
+        --jvm-options="-XX:+UseG1GC -XX:+UseStringDeduplication -XX:InitialRAMPercentage=50.0 -XX:MinRAMPercentage=66.6 -XX:MaxRAMPercentage=66.6 -XX:ActiveProcessorCount=1"
     
     az spring app create --name ${CUSTOMERS_SERVICE} --instance-count 1 \
         --memory 3Gi \
         --runtime-version Java_17 \
-        --jvm-options='-XX:InitialRAMPercentage=50.0 -XX:MinRAMPercentage=66.6 -XX:MaxRAMPercentage=66.6'
+        --jvm-options="-XX:+UseG1GC -XX:+UseStringDeduplication -XX:InitialRAMPercentage=50.0 -XX:MinRAMPercentage=66.6 -XX:MaxRAMPercentage=66.6 -XX:ActiveProcessorCount=1"
     
     az spring app create --name ${VETS_SERVICE} --instance-count 1 \
         --memory 3Gi \
         --runtime-version Java_17 \
-        --jvm-options='-XX:InitialRAMPercentage=50.0 -XX:MinRAMPercentage=66.6 -XX:MaxRAMPercentage=66.6'
+        --jvm-options="-XX:+UseG1GC -XX:+UseStringDeduplication -XX:InitialRAMPercentage=50.0 -XX:MinRAMPercentage=66.6 -XX:MaxRAMPercentage=66.6 -XX:ActiveProcessorCount=1"
     
     az spring app create --name ${VISITS_SERVICE} --instance-count 1 \
         --memory 3Gi \
         --runtime-version Java_17 \
-        --jvm-options='-XX:InitialRAMPercentage=50.0 -XX:MinRAMPercentage=66.6 -XX:MaxRAMPercentage=66.6'
+        --jvm-options="-XX:+UseG1GC -XX:+UseStringDeduplication -XX:InitialRAMPercentage=50.0 -XX:MinRAMPercentage=66.6 -XX:MaxRAMPercentage=66.6 -XX:ActiveProcessorCount=1"
 ```
 
 ### MySQL Databaseの作成
@@ -394,7 +410,6 @@ az spring app deploy \
         --service ${SPRING_APPS} \
         --name ${API_GATEWAY} \
         --source-path \
-        --jvm-options="-XX:+UseG1GC -XX:+UseStringDeduplication -XX:InitialRAMPercentage=50.0 -XX:MinRAMPercentage=66.6 -XX:MaxRAMPercentage=66.6 -XX:ActiveProcessorCount=1" \
         --env SPRING_PROFILES_ACTIVE=passwordless BP_JVM_VERSION=17 \
         --target-module spring-petclinic-api-gateway
 
@@ -403,7 +418,6 @@ az spring app deploy \
         --service ${SPRING_APPS} \
         --name ${ADMIN_SERVER} \
         --source-path \
-        --jvm-options="-XX:+UseG1GC -XX:+UseStringDeduplication -XX:InitialRAMPercentage=50.0 -XX:MinRAMPercentage=66.6 -XX:MaxRAMPercentage=66.6 -XX:ActiveProcessorCount=1" \
         --env SPRING_PROFILES_ACTIVE=passwordless BP_JVM_VERSION=17 \
         --target-module spring-petclinic-admin-server
 
@@ -412,7 +426,6 @@ az spring app deploy \
         --service ${SPRING_APPS} \
         --name ${CUSTOMERS_SERVICE} \
         --source-path \
-        --jvm-options="-XX:+UseG1GC -XX:+UseStringDeduplication -XX:InitialRAMPercentage=50.0 -XX:MinRAMPercentage=66.6 -XX:MaxRAMPercentage=66.6 -XX:ActiveProcessorCount=1" \
         --env SPRING_PROFILES_ACTIVE=passwordless BP_JVM_VERSION=17 \
         --target-module spring-petclinic-customers-service
 
@@ -421,7 +434,6 @@ az spring app deploy \
         --service ${SPRING_APPS} \
         --name ${VETS_SERVICE} \
         --source-path \
-        --jvm-options="-XX:+UseG1GC -XX:+UseStringDeduplication -XX:InitialRAMPercentage=50.0 -XX:MinRAMPercentage=66.6 -XX:MaxRAMPercentage=66.6 -XX:ActiveProcessorCount=1" \
         --env SPRING_PROFILES_ACTIVE=passwordless BP_JVM_VERSION=17 \
         --target-module spring-petclinic-vets-service
 
@@ -430,12 +442,11 @@ az spring app deploy \
         --service ${SPRING_APPS} \
         --name ${VISITS_SERVICE} \
         --source-path \
-        --jvm-options="-XX:+UseG1GC -XX:+UseStringDeduplication -XX:InitialRAMPercentage=50.0 -XX:MinRAMPercentage=66.6 -XX:MaxRAMPercentage=66.6 -XX:ActiveProcessorCount=1" \
         --env SPRING_PROFILES_ACTIVE=passwordless BP_JVM_VERSION=17 \
         --target-module spring-petclinic-visits-service
 ```
 
-完了したら、以下のコマンドでAPI GatewayのURLを確認してください。
+完了したら、以下のコマンドでAPI GatewayのURLを確認します。
 
 ```bash
     echo $(az spring app show --name ${API_GATEWAY} --query properties.url --output tsv)
@@ -542,10 +553,10 @@ Spring Bootの自動設定により、Spring MVCが処理するリクエスト�
 `OwnerResource`、`PetResource`、`VisitResource` というこの3つのRESTコントローラは、クラスレベルの `@Timed` Micrometerアノテーションによってインストルメンテーションされています。
 
 * `customers-service` アプリケーションでは、以下のカスタムメトリクスが有効化されています。
-  * @Timed: `petclinic.owner`
-  * @Timed: `petclinic.pet`
+  * `@Timed`: `petclinic.owner`
+  * `@Timed`: `petclinic.pet`
 * `visits-service` アプリケーションでは、以下のカスタムメトリクスが有効化されています。
-  * @Timed: `petclinic.visit`
+  * `@Timed`: `petclinic.visit`
 
 `Metrics` ブレードでこれらのカスタムメトリクスを確認できます。
 ![](./media/petclinic-microservices-custom-metrics.jpg)
@@ -672,7 +683,9 @@ az rest --method POST \
 |OWNER|コードをホストしている GitHub リポジトリの所有者。リポジトリをフォークした場合、オーナーはGitHubのユーザー名。 |
 
 ```bash
-az rest --method POST --uri 'https://graph.microsoft.com/beta/applications/00000000-0000-0000-0000-000000000000/federatedIdentityCredentials' --body '{"name":"github-petclinic-actions","issuer":"https://token.actions.githubusercontent.com","subject":"repo:Azure-Samples/spring-petclinic-microservices:ref:refs/heads/azure","description":"チュートリアル","audiences":["api://AzureADTokenExchange"]}'
+az rest --method POST \
+  --uri 'https://graph.microsoft.com/beta/applications/00000000-0000-0000-0000-000000000000/federatedIdentityCredentials' \
+  --body '{"name":"github-petclinic-actions","issuer":"https://token.actions.githubusercontent.com","subject":"repo:Azure-Samples/spring-petclinic-microservices:ref:refs/heads/azure","description":"チュートリアル","audiences":["api://AzureADTokenExchange"]}'
 ```
 
 コマンド実行結果は以下のようになるはずです。
@@ -716,7 +729,7 @@ GitHub Actionsが起動し、リポジトリにあるすべてのアプリをビ
 
 ## Unit-3 - Azure Spring AppsのアプリケーションのManaged Identitiesを有効化
 
-このUnitは、すでにService Connectorで有効化されているので、実施不要です。
+> **すでにService Connectorで有効化されているので、このUnitは実施不要です。**
 
 システム割り当てのManaged Identityを各アプリケーションで有効化し、各Managed IdentityのPrincipal IDを環境変数に設定します。
 
@@ -737,15 +750,15 @@ MySQLにパスワードレス接続するためのプロファイルが構成リ
 
 ```bash
     az spring app update --name ${CUSTOMERS_SERVICE} \
-        --jvm-options='-XX:InitialRAMPercentage=50.0 -XX:MinRAMPercentage=66.6 -XX:MaxRAMPercentage=66.6' \
+        --jvm-options="-XX:+UseG1GC -XX:+UseStringDeduplication -XX:InitialRAMPercentage=50.0 -XX:MinRAMPercentage=66.6 -XX:MaxRAMPercentage=66.6 -XX:ActiveProcessorCount=1"
         --env SPRING_PROFILES_ACTIVE=passwordless
 
     az spring app update --name ${VETS_SERVICE} \
-        --jvm-options='-XX:InitialRAMPercentage=50.0 -XX:MinRAMPercentage=66.6 -XX:MaxRAMPercentage=66.6' \
+        --jvm-options="-XX:+UseG1GC -XX:+UseStringDeduplication -XX:InitialRAMPercentage=50.0 -XX:MinRAMPercentage=66.6 -XX:MaxRAMPercentage=66.6 -XX:ActiveProcessorCount=1"
         --env SPRING_PROFILES_ACTIVE=passwordless
         
     az spring app update --name ${VISITS_SERVICE} \
-        --jvm-options='-XX:InitialRAMPercentage=50.0 -XX:MinRAMPercentage=66.6 -XX:MaxRAMPercentage=66.6' \
+        --jvm-options="-XX:+UseG1GC -XX:+UseStringDeduplication -XX:InitialRAMPercentage=50.0 -XX:MinRAMPercentage=66.6 -XX:MaxRAMPercentage=66.6 -XX:ActiveProcessorCount=1"
         --env SPRING_PROFILES_ACTIVE=passwordless
 ```
 
