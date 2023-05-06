@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   call-deploy_API_Gateway:
-    uses: anishi1222/spring-petclinic-microservices/.github/workflows/action-api-gateway.yml@azure
+    uses: anishi1222/spring-petclinic-microservices/.github/workflows/action-api-gateway.yml@ja_JP
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -18,7 +18,7 @@ jobs:
       RESOURCE_GROUP: ${{ secrets.RESOURCE_GROUP }}
 
   call-deploy_Admin_Server:
-    uses: anishi1222/spring-petclinic-microservices/.github/workflows/action-admin-server.yml@azure
+    uses: anishi1222/spring-petclinic-microservices/.github/workflows/action-admin-server.yml@ja_JP
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -27,7 +27,7 @@ jobs:
       RESOURCE_GROUP: ${{ secrets.RESOURCE_GROUP }}
 
   call-deploy_Customers_Service:
-    uses: anishi1222/spring-petclinic-microservices/.github/workflows/action-customers-service.yml@azure
+    uses: anishi1222/spring-petclinic-microservices/.github/workflows/action-customers-service.yml@ja_JP
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -36,7 +36,7 @@ jobs:
       RESOURCE_GROUP: ${{ secrets.RESOURCE_GROUP }}
 
   call-deploy_Vets_Service:
-    uses: anishi1222/spring-petclinic-microservices/.github/workflows/action-vets-service.yml@azure
+    uses: anishi1222/spring-petclinic-microservices/.github/workflows/action-vets-service.yml@ja_JP
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -45,7 +45,7 @@ jobs:
       RESOURCE_GROUP: ${{ secrets.RESOURCE_GROUP }}
 
   call-deploy_Visits_Service:
-    uses: anishi1222/spring-petclinic-microservices/.github/workflows/action-visits-service.yml@azure
+    uses: anishi1222/spring-petclinic-microservices/.github/workflows/action-visits-service.yml@ja_JP
     secrets:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
