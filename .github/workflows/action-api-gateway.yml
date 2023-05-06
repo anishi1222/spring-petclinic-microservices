@@ -3,7 +3,7 @@ name: Deploy to Azure Spring Apps using passwordless connections (API Gateway)
 on:
   push:
     branches:
-      - Azure
+      - ja_JP
     paths:
       - 'spring-petclinic-api-gateway/**'
   workflow_dispatch:
