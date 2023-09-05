@@ -23,6 +23,15 @@ urlFragment: "spring-petclinic-microservices"
 
 ![Spring Petclinic Application](media/petclinic.jpg)
 
+Step by stepでアプリケーションの実行を進める前に、単純にDeploy to Azureボタンを押すこともできます。
+押すと、すぐにAzure Spring Appsにアプリケーションをデプロイします。
+
+| Deploy to Azure Spring Appsへのデプロイ | |
+|--|--|
+| 従量課金 (Consumption plan)   |Not supported|
+| Basic/Standard |Not supported|
+| Enterprise |[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure-Samples%2Fspring-petclinic-microservices%2Fazure%2Finfra%2Fazuredeploy.json)|
+
 ## AZDで実行する
 
 ### 前提条件
@@ -30,8 +39,14 @@ urlFragment: "spring-petclinic-microservices"
 このアプリケーションを使うために以下を事前に準備し、すべてローカル環境にインストールしておいてください。
 
 - [Azure Developer CLI](https://aka.ms/azd-install)
-- [Java 17以後](https://learn.microsoft.com/java/openjdk/install) - for API backend
+- [Java 17以後](https://learn.microsoft.com/java/openjdk/install) - API backend用
 - [Powershell 7](https://learn.microsoft.com/powershell/scripting/install/installing-powershell-on-windows?view=powershell-7.3) もしWindowsをお使いの場合。
+
+Azure Developer CLIの1.2.0以前を使っている場合、以下のコマンドを使ってAzure Spring Appsサポートを有効化する必要があります。
+
+```bash
+azd config set alpha.springapp on
+```
 
 ### クイックスタート
 
